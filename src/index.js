@@ -28,7 +28,11 @@ if (!isDevMode) {
   app.use(compress())
 }
 
+let port = isDevMode ? 3000 : 12005
+
 app.use(middleware)
 app.use(router())
 
-app.listen(3000)
+app.listen(port, () => {
+  console.log(`server is running at ${port}`);
+})
