@@ -1,9 +1,10 @@
 import redis from 'redis'
+import {REDIS} from './index'
 
 const options = {
-    host: '192.168.1.7',
-    port: 15001,
-    password: 'redispass',
+    host: REDIS.host,
+    port: REDIS.port,
+    password: REDIS.password,
     // If set to true, then replies will be sent to callbacks as Buffers. 
     detect_buffers: true,
     retry_strategy: function(options) {

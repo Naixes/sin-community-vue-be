@@ -14,7 +14,7 @@ class PublicController {
       height: 38,
     });
     // 保存图片验证码，设置过期时间
-    setValue(sid, newCaptcha.text, 1 * 60)
+    setValue(sid, newCaptcha.text, 10 * 60)
     ctx.body = {
       code: 200,
       // newCaptcha.text，验证码内容
