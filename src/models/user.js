@@ -3,7 +3,8 @@ import mongoose from '../config/DBHelper'
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
-    'username': {type: String},
+    'email': {type: String},
+    'name': {type: String},
     'password': {type: String}
 })
 
