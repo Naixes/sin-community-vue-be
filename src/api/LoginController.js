@@ -1,53 +1,52 @@
-import sendEmail from "../config/MailConfig";
-import moment from "moment";
+import sendEmail from '../config/MailConfig'
+import moment from 'moment'
 import jsonwebtoken from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
-import {JWT_SECRET} from "../config";
-import {checkCaptcha} from '../common/utils'
-import User from "../models/user";
+import { JWT_SECRET } from '../config'
+import { checkCaptcha } from '../common/utils'
+import User from '../models/user'
 
 class LoginController {
-  constructor() {}
-  async forget(ctx) {
-    const { body } = ctx.request;
-    console.log("body", body);
+  async forget (ctx) {
+    const { body } = ctx.request
+    console.log('body', body)
     try {
       // TODO：查询用户是否存在
-      let result = await sendEmail({
-        code: "1234",
-        expire: moment().add(30, "m").format("YYYY-MM-DD HH:mm:ss"),
+      const result = await sendEmail({
+        code: '1234',
+        expire: moment().add(30, 'm').format('YYYY-MM-DD HH:mm:ss'),
         email: body.email,
-        user: "naixes",
-      });
+        user: 'naixes'
+      })
       ctx.body = {
         code: 200,
         data: result,
-        msg: "邮件发送成功",
-      };
+        msg: '邮件发送成功'
+      }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
-  async login(ctx) {
+  async login (ctx) {
     // 接收数据
-    const {body} = ctx.request
-    const {sid, captcha, email, password} = body
+    const { body } = ctx.request
+    const { sid, captcha, email, password } = body
     // 验证验证码时效性正确性
     const checkCaptchaResult = await checkCaptcha(sid, captcha)
-    if(checkCaptchaResult) {
+    if (checkCaptchaResult) {
       // 验证用户账号密码
       let checkUserPass = false
       // 查mongoDB库
-      const user = await User.findOne({email})
-      console.log(user);
-      if(user && (await bcrypt.compare(password, user.password))) {
+      const user = await User.findOne({ email })
+      console.log(user)
+      if (user && (await bcrypt.compare(password, user.password))) {
         checkUserPass = true
       }
-      if(checkUserPass) {
+      if (checkUserPass) {
         // 返回token
-        let token = jsonwebtoken.sign({_id: 'naixes'}, JWT_SECRET, {
+        const token = jsonwebtoken.sign({ _id: 'naixes' }, JWT_SECRET, {
           // 60 * 60 单位是秒
           // 1h
           expiresIn: '1d'
@@ -56,13 +55,13 @@ class LoginController {
           code: 200,
           token
         }
-      }else {
+      } else {
         ctx.body = {
           code: 401,
           msg: '用户名或者密码错误，请重试！'
         }
       }
-    }else {
+    } else {
       ctx.body = {
         code: 402,
         msg: '验证码校验失败，请重试！'
@@ -70,30 +69,30 @@ class LoginController {
     }
   }
 
-  async reg(ctx) {
+  async reg (ctx) {
     // 获取数据
-    const {body} = ctx.request
-    let {email, name, password, captcha, sid} = body
-    let msg = {}
+    const { body } = ctx.request
+    let { email, name, password, captcha, sid } = body
+    const msg = {}
     // 验证验证码时效性正确性
     const checkCaptchaResult = await checkCaptcha(sid, captcha)
     let checkUser = true
-    if(checkCaptchaResult) {
+    if (checkCaptchaResult) {
       // 昵称用户名查重
-      let _nameUser = await User.findOne({name})
-      if(_nameUser && _nameUser.name) {
+      const _nameUser = await User.findOne({ name })
+      if (_nameUser && _nameUser.name) {
         msg.name = ['此昵称已经被注册，请重新输入']
         checkUser = false
       }
-      let _emailUser = await User.findOne({email})
-      if(_emailUser && _emailUser.email) {
+      const _emailUser = await User.findOne({ email })
+      if (_emailUser && _emailUser.email) {
         msg.name = ['此邮箱已经被注册，可以通过邮箱找回密码']
         checkUser = false
       }
       // 保存到数据库
-      if(checkUser) {
+      if (checkUser) {
         password = await bcrypt.hash(password, 5)
-        let user = new User({
+        const user = new User({
           email,
           name,
           password,
@@ -106,8 +105,8 @@ class LoginController {
           msg: '注册成功'
         }
       }
-    }else {
-        msg.captcha = ['验证码校验失败，请重试！']
+    } else {
+      msg.captcha = ['验证码校验失败，请重试！']
     }
     ctx.body = {
       code: 500,
@@ -116,4 +115,4 @@ class LoginController {
   }
 }
 
-export default new LoginController();
+export default new LoginController()
