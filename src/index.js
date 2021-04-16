@@ -1,4 +1,4 @@
-import koa from 'koa'
+import Koa from 'koa'
 import path from 'path'
 import helmet from 'koa-helmet'
 import statics from 'koa-static'
@@ -11,12 +11,12 @@ import JWT from 'koa-jwt'
 import compose from 'koa-compose'
 import compress from 'koa-compress'
 
-import {JWT_SECRET} from './config'
+import { JWT_SECRET } from './config'
 import errHandle from './common/errHandle'
 
-const app = new koa()
+const app = new Koa()
 
-const isDevMode = process.env.NODE_ENV === 'production' ? false : true
+const isDevMode = process.env.NODE_ENV !== 'production'
 
 const jwt = JWT({ secret: JWT_SECRET }).unless({ path: [/^\/public/, /\/login/] })
 
@@ -37,11 +37,11 @@ if (!isDevMode) {
   app.use(compress())
 }
 
-let port = isDevMode ? 3000 : 12005
+const port = isDevMode ? 3000 : 12005
 
 app.use(middleware)
 app.use(router())
 
 app.listen(port, () => {
-  console.log(`server is running at ${port}`);
+  console.log(`server is running at ${port}`)
 })
