@@ -1,6 +1,31 @@
 import Post from '../models/Post'
+import { LinksModel, TipsModel } from '../models/LinksTips'
 
 class ContentController {
+  async getLinks (ctx) {
+    const result = await LinksModel.find()
+    ctx.body = {
+      code: 200,
+      data: result
+    }
+  }
+
+  async getTips (ctx) {
+    const result = await TipsModel.find()
+    ctx.body = {
+      code: 200,
+      data: result
+    }
+  }
+
+  async getTopWeek (ctx) {
+    const result = await Post.getTopWeek()
+    ctx.body = {
+      code: 200,
+      data: result
+    }
+  }
+
   async getPostList (ctx) {
     const { query } = ctx.request
     console.log('query', query)
@@ -38,10 +63,10 @@ class ContentController {
     if (typeof query.isTop !== 'undefined') {
       options.isTop = query.isTop
     }
-    if (typeof query.isEnd !== 'undefined') {
-      options.isEnd = query.isEnd
+    if (typeof query.status !== 'undefined' && query.status !== '') {
+      options.isEnd = query.status
     }
-    if (typeof query.tag !== 'undefined') {
+    if (typeof query.tag !== 'undefined' && query.tag !== '') {
       options.tags = {
         $elemMatch: { name: query.tag }
       }

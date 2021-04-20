@@ -17,7 +17,7 @@ const UserSchema = new Schema({
   status: { type: String, default: '0' },
   regmark: { type: String, default: '' },
   location: { type: String, default: '' },
-  isVip: { type: String },
+  isVip: { type: String, default: '0' },
   count: { type: Number, default: 0 },
   created: { type: Date },
   updated: { type: Date }

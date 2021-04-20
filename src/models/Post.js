@@ -41,8 +41,19 @@ PostSchema.statics = {
       // 联合查询
       .populate({
         path: 'uid',
-        select: 'email, isVip, avatar'
+        select: 'name email isVip avatar'
       })
+  },
+  getTopWeek: function () {
+    return this.find({
+      created: {
+        $gte: moment().subtract(7, 'days')
+      }
+    }, {
+      answers: 1,
+      title: 1
+    }).sort({ answers: -1 })
+      .limit(15)
   }
 }
 
