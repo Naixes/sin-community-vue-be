@@ -8,6 +8,7 @@ class UserController {
   // 签到
   async userSign (ctx) {
     let result = {}
+    let newRecord = {}
     // 获取用户ID
     const userObj = await getJWTPayload(ctx.header.authorization)
     console.log(userObj)
@@ -24,7 +25,8 @@ class UserController {
           code: 500,
           data: {
             points: userInfo.points,
-            count: userInfo.count
+            count: userInfo.count,
+            lastSign: record.created
           },
           msg: '今天已经签到过了'
         }
@@ -72,7 +74,7 @@ class UserController {
           }
         }
         // 保存签到记录
-        const newRecord = new SignRecord({
+        newRecord = new SignRecord({
           uid: userObj._id,
           points,
           lastSign: record.created
@@ -88,7 +90,7 @@ class UserController {
 
       })
       // 保存签到记录
-      const newRecord = new SignRecord({
+      newRecord = new SignRecord({
         uid: userObj._id,
         points: 5,
         // 第一次的上一次就是本次
@@ -102,7 +104,10 @@ class UserController {
     }
     ctx.body = {
       code: 200,
-      data: result,
+      data: {
+        ...result,
+        lastSign: newRecord.created
+      },
       msg: '请求成功'
     }
   }

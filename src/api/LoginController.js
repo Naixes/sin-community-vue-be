@@ -68,6 +68,7 @@ class LoginController {
           } else {
             userObj.isSign = false
           }
+          userObj.lastSign = signRecord.created
           // 未签到
         } else {
           userObj.isSign = false
