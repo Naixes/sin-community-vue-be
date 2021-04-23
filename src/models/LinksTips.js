@@ -4,6 +4,11 @@ import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const LinksTipsSchema = new Schema({
+  title: { type: String },
+  link: { type: String },
+  isTop: { type: String },
+  sort: { type: String },
+  created: { type: Date }
 })
 
 // 钩子

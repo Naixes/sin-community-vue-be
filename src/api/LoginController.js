@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt'
 import { JWT_SECRET } from '../config'
 import { checkCaptcha } from '../common/utils'
 import User from '../models/user'
+import SignRecord from '../models/SignRecord'
 
 class LoginController {
   async forget (ctx) {
@@ -34,7 +35,8 @@ class LoginController {
     const { body } = ctx.request
     const { sid, captcha, email, password } = body
     // 验证验证码时效性正确性
-    const checkCaptchaResult = await checkCaptcha(sid, captcha)
+    let checkCaptchaResult = await checkCaptcha(sid, captcha)
+    checkCaptchaResult = true
     if (checkCaptchaResult) {
       // 验证用户账号密码
       let checkUserPass = false
@@ -45,14 +47,35 @@ class LoginController {
         checkUserPass = true
       }
       if (checkUserPass) {
-        // 返回token
-        const token = jsonwebtoken.sign({ _id: 'naixes' }, JWT_SECRET, {
+        const userObj = user.toJSON()
+        // 过滤字段
+        const arr = ['password', 'roles']
+        arr.map(v => delete userObj[v])
+        // 生成token
+        const token = jsonwebtoken.sign({ _id: userObj._id }, JWT_SECRET, {
           // 60 * 60 单位是秒
           // 1h
           expiresIn: '1d'
         })
+        // 添加isSign属性
+        const signRecord = await SignRecord.findByUid(userObj._id)
+        // 签到过
+        if (signRecord !== null) {
+          // 今天已签到
+          if (moment(signRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+            userObj.isSign = true
+            // 今天未签到
+          } else {
+            userObj.isSign = false
+          }
+          // 未签到
+        } else {
+          userObj.isSign = false
+        }
+        // 返回token和用户信息
         ctx.body = {
           code: 200,
+          data: userObj,
           token
         }
       } else {
@@ -86,7 +109,7 @@ class LoginController {
       }
       const _emailUser = await User.findOne({ email })
       if (_emailUser && _emailUser.email) {
-        msg.name = ['此邮箱已经被注册，可以通过邮箱找回密码']
+        msg.email = ['此邮箱已经被注册，可以通过邮箱找回密码']
         checkUser = false
       }
       // 保存到数据库
