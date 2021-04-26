@@ -1,5 +1,6 @@
 import moment from 'dayjs'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 import { getJWTPayload } from '../common/utils'
 import SignRecord from '../models/SignRecord'
@@ -10,6 +11,29 @@ import { getValue, setValue } from '../config/RedisConfig'
 import { JWT_SECRET } from '../config'
 
 class UserController {
+  async changePasswd (ctx) {
+    const { body } = ctx.request
+    const userObj = await getJWTPayload(ctx.header.authorization)
+    const userInfo = await User.find({ _id: userObj._id })
+    if (bcrypt.compare(body.oldpwd, userInfo.password)) {
+      const newpasswd = bcrypt.hash(body.newpasswd, 5)
+      await User.updateOne({ _id: userObj._id }, {
+        $set: {
+          password: newpasswd
+        }
+      })
+      ctx.body = {
+        code: 200,
+        msg: '密码更新成功'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '密码更新失败'
+      }
+    }
+  }
+
   // 签到
   async userSign (ctx) {
     let result = {}

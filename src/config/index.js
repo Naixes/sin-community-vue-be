@@ -1,3 +1,5 @@
+import path from 'path'
+
 const REDIS = {
   host: '172.16.108.250',
   port: 15001,
@@ -12,9 +14,12 @@ const JWT_SECRET = 'naixes'
 
 const baseUrl = process.env.NODE_ENV === 'product' ? '' : 'http://localhost:3000'
 
+const uploadPath = process.env.NODE_ENV === 'product' ? '' : path.join(path.resolve(__dirname, '../../public'))
+
 export {
   REDIS,
   DB_URL,
   JWT_SECRET,
-  baseUrl
+  baseUrl,
+  uploadPath
 }

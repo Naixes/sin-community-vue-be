@@ -1,4 +1,5 @@
 import svgCaptcha from 'svg-captcha'
+
 import { setValue } from '../config/RedisConfig'
 
 class PublicController {
