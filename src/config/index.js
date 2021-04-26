@@ -10,8 +10,11 @@ const DB_URL = 'mongodb://naixes:mongopass@172.16.108.250:27017/communitydb'
 // 尽量长，复杂，可以使用工具生成
 const JWT_SECRET = 'naixes'
 
+const baseUrl = process.env.NODE_ENV === 'product' ? '' : 'http://localhost:3000'
+
 export {
   REDIS,
   DB_URL,
-  JWT_SECRET
+  JWT_SECRET,
+  baseUrl
 }

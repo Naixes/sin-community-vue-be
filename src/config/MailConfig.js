@@ -1,5 +1,8 @@
 'use strict'
 import nodemailer from 'nodemailer'
+import qs from 'qs'
+
+import { baseUrl } from '.'
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendEmail (sendInfo) {
@@ -31,14 +34,15 @@ async function sendEmail (sendInfo) {
   //     user: "naixes",
   //   };
 
-  const url = 'https://github.com/Naixes'
+  const route = sendInfo.type === 'email' ? '/confirm' : '/reset'
+  const url = `${baseUrl}/#${route}?` + qs.stringify(sendInfo.data)
 
   // send mail with defined transport object
   const info = await transporter.sendMail({
     from: '"认证邮箱" <615411375@qq.com>', // sender address
     to: sendInfo.email, // list of receivers
     subject:
-      sendInfo.user !== '' ? `你好开发者${sendInfo.user}注册码` : '注册码', // Subject line
+      sendInfo.user !== '' || sendInfo.type !== 'email' ? `你好开发者${sendInfo.user}注册码` : '确认修改邮件链接', // Subject line
     text: `您的邀请码是${sendInfo.code}，过期时间为${sendInfo.expire}`, // plain text body
     html: `
     <div style="border: 1px solid #dcdcdc;color: #676767;width: 600px; margin: 0 auto; padding-bottom: 50px;position: relative;">
