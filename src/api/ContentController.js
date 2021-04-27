@@ -5,9 +5,53 @@ import moment from 'dayjs'
 import Post from '../models/Post'
 import { LinksModel, TipsModel } from '../models/LinksTips'
 import { uploadPath } from '../config'
-import { dirExists } from '../common/utils'
+import { checkCaptcha, dirExists, getJWTPayload } from '../common/utils'
+import User from '../models/user'
 
 class ContentController {
+  // 发帖
+  async addPost (ctx) {
+    // 接收数据
+    const { body } = ctx.request
+    const { sid, captcha, points } = body
+    // 验证验证码时效性正确性
+    let checkCaptchaResult = await checkCaptcha(sid, captcha)
+    checkCaptchaResult = true
+    if (checkCaptchaResult) {
+      // 判断用户积分是否足够
+      const userObj = await getJWTPayload(ctx.header.authorization)
+      const userInfo = await User.findById(userObj._id)
+      if (userInfo.points < points) {
+        ctx.body = {
+          code: 501,
+          msg: '积分不足'
+        }
+        return
+      } else {
+        // 减除积分
+        await User.updateOne({ _id: userObj._id }, {
+          $inc: {
+            points: -points
+          }
+        })
+      }
+      // 新建post
+      const newPost = new Post(body)
+      newPost.uid = userObj._id
+      const result = await newPost.save()
+      ctx.body = {
+        code: 200,
+        msg: '发表成功',
+        data: result
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '验证码校验失败，请重试！'
+      }
+    }
+  }
+
   async getLinks (ctx) {
     const result = await LinksModel.find()
     ctx.body = {
