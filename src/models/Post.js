@@ -27,6 +27,12 @@ PostSchema.pre('save', function (next) {
 })
 
 PostSchema.statics = {
+  findByTid: function (tid) {
+    return this.findOne({ _id: tid }).populate({
+      path: 'uid',
+      select: 'name avatar isVip _id'
+    })
+  },
   /**
      * 获取文章列表
      * @param {Object} options 筛选条件

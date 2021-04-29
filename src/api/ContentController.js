@@ -9,6 +9,40 @@ import { checkCaptcha, dirExists, getJWTPayload } from '../common/utils'
 import User from '../models/user'
 
 class ContentController {
+  // 帖子详情
+  async getPostDetail (ctx) {
+    const params = ctx.query
+    if (!params.tid) {
+      ctx.body = {
+        code: 500,
+        msg: '文章标题为空'
+      }
+      return
+    }
+    const postDetail = await Post.findByTid(params.tid)
+    // 重命名
+    // const result = rename(postDetail.toJSON(), 'uid', 'user')
+    // 更新阅读量
+    const result = await Post.updateOne({ _id: params.tid }, {
+      $inc: {
+        reads: 1
+      }
+    })
+    if (postDetail._id && result.ok === 1) {
+      ctx.body = {
+        code: 200,
+        data: postDetail,
+        msg: '获取文章详情成功'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        data: result,
+        msg: '获取文章详情失败'
+      }
+    }
+  }
+
   // 发帖
   async addPost (ctx) {
     // 接收数据

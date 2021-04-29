@@ -5,6 +5,14 @@ import path from 'path'
 import { getValue } from '../config/RedisConfig'
 import config from '../config/index'
 
+const rename = (obj, key, newKey) => {
+  if (Object.keys(obj).indexOf(key) === -1) {
+    obj[newKey] = obj[key]
+    delete obj[key]
+  }
+  return obj
+}
+
 const getJWTPayload = token => {
   return jwt.verify(token.split(' ')[1], config.JWT_SECRET)
 }
@@ -65,5 +73,6 @@ const dirExists = async (dir) => {
 export {
   checkCaptcha,
   getJWTPayload,
-  dirExists
+  dirExists,
+  rename
 }
