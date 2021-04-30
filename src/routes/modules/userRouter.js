@@ -1,4 +1,5 @@
 import Router from 'koa-router'
+import contentController from '../../api/ContentController'
 import userController from '../../api/UserController'
 
 const router = new Router()
@@ -8,5 +9,9 @@ router.get('/sign', userController.userSign)
 router.get('/updateUserBasic', userController.updateUserBasic)
 router.get('/updateEmail', userController.updateEmail)
 router.get('/changePasswd', userController.changePasswd)
+router.get('/setCollect', userController.setCollect)
+router.get('/collect', userController.getCollect)
+router.get('/post', contentController.getPostByUid)
+router.get('/deletePost', contentController.deletePostByUid)
 
 export default router

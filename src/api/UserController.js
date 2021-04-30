@@ -9,8 +9,62 @@ import sendEmail from '../config/MailConfig'
 import { v4 as uuidv4 } from 'uuid'
 import { getValue, setValue } from '../config/RedisConfig'
 import { JWT_SECRET } from '../config'
+import UserCollect from '../models/UserCollect'
 
 class UserController {
+  async getBasicInfo (ctx) {
+    const { uid } = ctx.query
+    let user = await User.findById(uid)
+    // 查询签到记录
+    user = user.toJSON()
+    const result = await SignRecord.findOne({
+      uid,
+      created: {
+        $gte: moment().format('YYYY-MM-DD' + ' 00:00:00')
+      }
+    })
+    user.isSign = !!result.uid
+    ctx.body = {
+      code: 200,
+      data: user,
+      msg: '查询成功'
+    }
+  }
+
+  // 收藏
+  async setCollect (ctx) {
+    const params = ctx.query
+    // 判断是否已经收藏
+    const userObj = await getJWTPayload(ctx.header.authorization)
+    // 已经收藏，取消收藏
+    if (parseInt(params.isFav)) {
+      await UserCollect.deleteOne({ uid: userObj._id, tid: params.tid })
+      ctx.body = {
+        code: 200,
+        msg: '取消收藏成功'
+      }
+    } else {
+      const newCollect = new UserCollect({
+        uid: userObj._id,
+        tid: params.tid,
+        title: params.title
+      })
+      const result = await newCollect.save()
+      if (result.uid) {
+        ctx.body = {
+          code: 200,
+          msg: '收藏成功',
+          data: result
+        }
+      }
+    }
+  }
+
+  async getCollect (ctx) {
+
+  }
+
+  // 修改密码
   async changePasswd (ctx) {
     const { body } = ctx.request
     const userObj = await getJWTPayload(ctx.header.authorization)

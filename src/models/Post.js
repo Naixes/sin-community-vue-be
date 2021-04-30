@@ -27,6 +27,15 @@ PostSchema.pre('save', function (next) {
 })
 
 PostSchema.statics = {
+  findByUid: function (uid, page, limit) {
+    return this.find({ uid })
+      .skip(page * limit)
+      .limit(limit)
+      .sort({ created: -1 })
+  },
+  countByUid: function (uid) {
+    return this.find({ uid }).countDocuments()
+  },
   findByTid: function (tid) {
     return this.findOne({ _id: tid }).populate({
       path: 'uid',

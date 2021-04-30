@@ -7,8 +7,58 @@ import { LinksModel, TipsModel } from '../models/LinksTips'
 import { uploadPath } from '../config'
 import { checkCaptcha, dirExists, getJWTPayload } from '../common/utils'
 import User from '../models/user'
+import UserCollect from '../models/UserCollect'
 
 class ContentController {
+  async deletePostByUid (ctx) {
+    const params = ctx.query
+    const userObj = await getJWTPayload(ctx.header.authorization)
+    // 判断是否本人
+    const post = await Post.findOne({ _id: params.tid, uid: userObj._id })
+    if (post && post.tid && post.isEnd === '0') {
+      const result = await Post.deleteOne({ _id: params.tid })
+      if (result.ok === 1) {
+        ctx.body = {
+          code: 200,
+          msg: '删除成功'
+        }
+      } else {
+        ctx.body = {
+          code: 500,
+          msg: '删除失败',
+          data: result
+        }
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '没有权限，非本人或者已结贴'
+      }
+    }
+  }
+
+  // 获取用户发帖记录
+  async getPostByUid (ctx) {
+    const params = ctx.query
+    const userObj = await getJWTPayload(ctx.header.authorization)
+    const result = await Post.findByUid(userObj._id, params.page, params.limit ? parseInt(params.limit) : 10)
+    const total = await Post.countByUid(userObj._id)
+    if (result.length > 0) {
+      ctx.body = {
+        code: 200,
+        data: result,
+        total,
+        msg: '查询成功'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        data: result,
+        msg: '查询失败'
+      }
+    }
+  }
+
   // 帖子详情
   async getPostDetail (ctx) {
     const params = ctx.query
@@ -22,6 +72,19 @@ class ContentController {
     const postDetail = await Post.findByTid(params.tid)
     // 重命名
     // const result = rename(postDetail.toJSON(), 'uid', 'user')
+    // 增加isFav字段，表示是否已经收藏
+    let isFav = 0
+    // 判断登录
+    if (typeof ctx.header.authorization !== 'undefined' && ctx.header.authorization !== '') {
+      const userObj = await getJWTPayload(ctx.header.authorization)
+      const collect = await UserCollect.findOne({ uid: userObj._id, tid: params.tid })
+      // 已收藏
+      if (collect && collect.tid) {
+        isFav = 1
+      }
+    }
+    const newPost = postDetail.toJSON()
+    newPost.isFav = isFav
     // 更新阅读量
     const result = await Post.updateOne({ _id: params.tid }, {
       $inc: {
@@ -31,7 +94,7 @@ class ContentController {
     if (postDetail._id && result.ok === 1) {
       ctx.body = {
         code: 200,
-        data: postDetail,
+        data: newPost,
         msg: '获取文章详情成功'
       }
     } else {
@@ -77,6 +140,47 @@ class ContentController {
         code: 200,
         msg: '发表成功',
         data: result
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '验证码校验失败，请重试！'
+      }
+    }
+  }
+
+  // 更新帖子
+  async updatePost (ctx) {
+    // 接收数据
+    const { body } = ctx.request
+    const { sid, captcha } = body
+    // 验证验证码时效性正确性
+    let checkCaptchaResult = await checkCaptcha(sid, captcha)
+    checkCaptchaResult = true
+    if (checkCaptchaResult) {
+      const userObj = await getJWTPayload(ctx.header.authorization)
+      const post = await Post.findByTid(body.tid)
+      // 判断是否本人，是否结贴
+      if (post.uid === userObj._id && post.isEnd === '0') {
+        const result = Post.updateOne({ _id: body.tid }, body)
+        if (result.ok === 1) {
+          ctx.body = {
+            code: 200,
+            data: result,
+            msg: '帖子更新成功'
+          }
+        } else {
+          ctx.body = {
+            code: 500,
+            data: result,
+            msg: '帖子更新失败'
+          }
+        }
+      } else {
+        ctx.body = {
+          code: 401,
+          msg: '不是本人或者已经结贴，没有操作权限'
+        }
       }
     } else {
       ctx.body = {
