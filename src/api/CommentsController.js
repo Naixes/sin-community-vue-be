@@ -172,10 +172,16 @@ class CommentsController {
     // 查询帖子的作者，以便发送消息
     const post = await Post.findOne({ _id: body.tid })
     newComment.uid = post.uid
+    // 发送消息
+    const msgNum = await Comments.getTotal(post.uid)
+    global.ws.send(post.uid, JSON.stringify({
+      type: 'message',
+      message: `您有${msgNum}条新评论`
+    }))
     const comment = await newComment.save()
     const num = await Comments.getTotal(post.uid)
     global.ws.send(post.uid, JSON.stringify({
-      event: 'message',
+      type: 'message',
       message: num
     }))
     // 评论记数

@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt'
 import { getJWTPayload } from '../common/utils'
 import SignRecord from '../models/SignRecord'
 import User from '../models/user'
+import Comments from '../models/Comments'
 import sendEmail from '../config/MailConfig'
 import { v4 as uuidv4 } from 'uuid'
 import { getValue, setValue } from '../config/RedisConfig'
@@ -12,6 +13,52 @@ import { JWT_SECRET } from '../config'
 import UserCollect from '../models/UserCollect'
 
 class UserController {
+  // 设置已读消息
+  async setMsg (ctx) {
+    const params = ctx.query
+    if (params.id) {
+      // 设置一条
+      const result = await Comments.updateOne(
+        { _id: params.id },
+        { isRead: '1' }
+      )
+      if (result.ok === 1) {
+        ctx.body = {
+          code: 200
+        }
+      }
+    } else {
+      // 清空
+      const obj = await getJWTPayload(ctx.header.authorization)
+      const result = await Comments.updateMany(
+        { uid: obj._id },
+        { isRead: '1' }
+      )
+      if (result.ok === 1) {
+        ctx.body = {
+          code: 200
+        }
+      }
+    }
+  }
+
+  async getmsg (ctx) {
+    const params = ctx.query
+    const page = params.page ? params.page : 0
+    const limit = params.limit ? parseInt(params.limit) : 0
+    // 方法一：联合查询，复杂
+    // 方法二：冗余换时间
+    const userObj = await getJWTPayload(ctx.header.authorization)
+    const num = await Comments.getTotal(userObj._id)
+    const result = await Comments.getMsgList(userObj._id, page, limit)
+
+    ctx.body = {
+      code: 200,
+      data: result,
+      total: num
+    }
+  }
+
   async getBasicInfo (ctx) {
     const { uid } = ctx.query
     let user = await User.findById(uid)
