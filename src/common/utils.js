@@ -69,10 +69,89 @@ const dirExists = async (dir) => {
     return false
   }
 }
+const sortObj = (arr, property) => {
+  return arr.sort((m, n) => m[property] - n[property])
+}
+
+const sortMenus = (tree) => {
+  tree = sortObj(tree, 'sort')
+  if (tree.children && tree.children.length > 0) {
+    tree.children = sortMenus(tree.children, 'sort')
+  }
+  if (tree.operations && tree.operations.length > 0) {
+    tree.operations = sortMenus(tree.operations, 'sort')
+  }
+  return tree
+}
+
+const getMenuData = (tree, rights, flag) => {
+  const arr = []
+  for (let i = 0; i < tree.length; i++) {
+    const item = tree[i]
+    // _id 包含在menus中
+    // 结构进行改造，删除opertaions
+    if (rights.includes(item._id + '') || flag) {
+      if (item.type === 'menu') {
+        arr.push({
+          _id: item._id,
+          path: item.path,
+          meta: {
+            title: item.title,
+            hideInBread: item.hideInBread,
+            hideInMenu: item.hideInMenu,
+            notCache: item.notCache,
+            icon: item.icon
+          },
+          component: item.component,
+          children: getMenuData(item.children, rights)
+        })
+      } else if (item.type === 'link') {
+        arr.push({
+          _id: item._id,
+          path: item.path,
+          meta: {
+            title: item.title,
+            icon: item.icon,
+            href: item.link
+          }
+        })
+      }
+    }
+  }
+
+  return sortObj(arr, 'sort')
+}
+
+const flatten = (arr) => {
+  while (arr.some((item) => Array.isArray(item))) {
+    arr = [].concat(...arr)
+  }
+  return arr
+}
+
+const getRights = (tree, menus) => {
+  const arr = []
+  for (const item of tree) {
+    if (item.operations && item.operations.length > 0) {
+      for (const op of item.operations) {
+        if (menus.includes(op._id + '')) {
+          arr.push(op.path)
+        }
+      }
+    } else if (item.children && item.children.length > 0) {
+      arr.push(getRights(item.children, menus))
+    }
+  }
+  return flatten(arr)
+}
 
 export {
   checkCaptcha,
   getJWTPayload,
   dirExists,
-  rename
+  rename,
+  getMenuData,
+  sortMenus,
+  flatten,
+  getRights
 }
