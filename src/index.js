@@ -14,6 +14,7 @@ import compress from 'koa-compress'
 import { JWT_SECRET } from './config'
 import errHandle from './common/errHandle'
 import WebSocketServer from './config/WebSocket'
+import auth from '@/common/Auth'
 
 const app = new Koa()
 const ws = new WebSocketServer()
@@ -45,6 +46,7 @@ const middleware = compose([
   jsonutil({ pretty: false, param: 'pretty' }),
   helmet(),
   errHandle,
+  auth,
   jwt
 ])
 

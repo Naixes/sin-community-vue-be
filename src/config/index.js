@@ -16,10 +16,24 @@ const baseUrl = process.env.NODE_ENV === 'product' ? '' : 'http://localhost:3000
 
 const uploadPath = process.env.NODE_ENV === 'product' ? '' : path.join(path.resolve(__dirname, '../../public'))
 
+const adminEmail = ['615411375@qq.com']
+
+const publicPath = [/^\/public/, /^\/login/, /^\/content/, /^\/user/, /^\/comments/]
+
+const isDevMode = process.env.NODE_ENV !== 'production'
+
+const port = 3000
+const wsPort = 3001
+
 export {
   REDIS,
   DB_URL,
   JWT_SECRET,
   baseUrl,
-  uploadPath
+  uploadPath,
+  adminEmail,
+  publicPath,
+  isDevMode,
+  port,
+  wsPort
 }
