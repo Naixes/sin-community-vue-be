@@ -7,14 +7,15 @@ import koaBody from 'koa-body'
 import jsonutil from 'koa-json'
 import cors from '@koa/cors'
 import JWT from 'koa-jwt'
-
 import compose from 'koa-compose'
 import compress from 'koa-compress'
 
-import { JWT_SECRET } from './config'
 import errHandle from './common/errHandle'
 import WebSocketServer from './config/WebSocket'
 import auth from '@/common/Auth'
+import config from './config/index'
+import log4js from '@/config/Log4j'
+import monitorLogger from '@/common/Logger'
 
 const app = new Koa()
 const ws = new WebSocketServer()
@@ -24,12 +25,13 @@ global.ws = ws
 
 const isDevMode = process.env.NODE_ENV !== 'production'
 
-const jwt = JWT({ secret: JWT_SECRET }).unless({ path: [/^\/public/, /\/login/] })
+const jwt = JWT({ secret: config.JWT_SECRET }).unless({ path: [/^\/public/, /\/login/] })
 
 /**
  * 使用koa-compose 集成中间件
  */
 const middleware = compose([
+  monitorLogger,
   koaBody({
     // 配置文件上传
     multipart: true,
@@ -45,9 +47,16 @@ const middleware = compose([
   cors(),
   jsonutil({ pretty: false, param: 'pretty' }),
   helmet(),
-  errHandle,
+  jwt,
   auth,
-  jwt
+  errHandle,
+  config.isDevMode
+    ? log4js.koaLogger(log4js.getLogger('http'), {
+      level: 'auto'
+    })
+    : log4js.koaLogger(log4js.getLogger('access'), {
+      level: 'auto'
+    })
 ])
 
 if (!isDevMode) {
