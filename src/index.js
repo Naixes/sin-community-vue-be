@@ -10,7 +10,7 @@ import JWT from 'koa-jwt'
 import compose from 'koa-compose'
 import compress from 'koa-compress'
 
-import errHandle from './common/errHandle'
+import errorHandle from './common/ErrorHandle'
 import WebSocketServer from './config/WebSocket'
 import auth from './common/Auth'
 import config from '@/config/index'
@@ -49,7 +49,7 @@ const middleware = compose([
   helmet(),
   jwt,
   auth,
-  errHandle,
+  errorHandle,
   config.isDevMode
     ? log4js.koaLogger(log4js.getLogger('http'), {
       level: 'auto'
