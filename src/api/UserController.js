@@ -2,15 +2,15 @@ import moment from 'dayjs'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
-import { getJWTPayload } from '../common/utils'
-import SignRecord from '../models/SignRecord'
-import User from '../models/user'
-import Comments from '../models/Comments'
+import { getJWTPayload } from '../common/Utils'
+import SignRecord from '../model/SignRecord'
+import User from '../model/user'
+import Comments from '../model/Comments'
 import sendEmail from '../config/MailConfig'
 import { v4 as uuidv4 } from 'uuid'
 import { getValue, setValue } from '../config/RedisConfig'
 import { JWT_SECRET } from '../config'
-import UserCollect from '../models/UserCollect'
+import UserCollect from '../model/UserCollect'
 
 class UserController {
   // 设置已读消息

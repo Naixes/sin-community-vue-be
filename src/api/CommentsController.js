@@ -1,7 +1,7 @@
-import { checkCaptcha, getJWTPayload } from '../common/utils'
-import Comments from '../models/Comments'
-import Post from '../models/Post'
-import CommentsHands from '../models/CommentsHands'
+import { checkCaptcha, getJWTPayload } from '../common/Utils'
+import Comments from '../model/Comments'
+import Post from '../model/Post'
+import CommentsHands from '../model/CommentsHands'
 import User from './UserController'
 
 const canReply = async (ctx) => {

@@ -4,8 +4,8 @@ import jsonwebtoken from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 import { JWT_SECRET } from '../config'
-import { checkCaptcha } from '../common/utils'
-import User from '../models/user'
+import { checkCaptcha } from '../common/Utils'
+import User from '../model/user'
 import SignRecord from '../models/SignRecord'
 
 class LoginController {

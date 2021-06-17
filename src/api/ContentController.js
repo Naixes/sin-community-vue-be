@@ -2,12 +2,12 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'dayjs'
 
-import Post from '../models/Post'
-import { LinksModel, TipsModel } from '../models/LinksTips'
+import Post from '../model/Post'
+import { LinksModel, TipsModel } from '../model/LinksTips'
 import { uploadPath } from '../config'
-import { checkCaptcha, dirExists, getJWTPayload } from '../common/utils'
-import User from '../models/user'
-import UserCollect from '../models/UserCollect'
+import { checkCaptcha, dirExists, getJWTPayload } from '../common/Utils'
+import User from '../model/user'
+import UserCollect from '../model/UserCollect'
 
 class ContentController {
   async deletePostByUid (ctx) {

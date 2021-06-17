@@ -1,4 +1,4 @@
-import ErrorRecord from '../models/ErrorRecord'
+import ErrorRecord from '../model/ErrorRecord'
 import qs from 'qs'
 class ErrorController {
   async getErrorList (ctx) {

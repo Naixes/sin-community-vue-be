@@ -1,6 +1,6 @@
 import log4js from '../config/Log4j'
-import ErrorRecord from '../models/ErrorRecord'
-import User from '../models/User'
+import ErrorRecord from '../model/ErrorRecord'
+import User from '../model/User'
 import config from '../config/index'
 
 const logger = log4js.getLogger('error')

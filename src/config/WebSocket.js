@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import { getJWTPayload } from '../common/Utils'
-import Comments from '../models/Comments'
+import Comments from '../model/Comments'
 import configfile from './index'
 //
 class WebSocketServer {
