@@ -1,5 +1,5 @@
 import config from '@/config'
-import User from '@/model/User'
+import User from '@/models/User'
 import { setValue } from '@/config/RedisConfig'
 
 export const run = async () => {

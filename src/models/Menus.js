@@ -1,4 +1,4 @@
-import mongoose from '@/config/DBHelpler'
+import mongoose from '@/config/DBHelper'
 
 const Schema = mongoose.Schema
 

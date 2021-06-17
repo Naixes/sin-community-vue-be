@@ -1,13 +1,13 @@
-import Menu from '@/model/Menus'
-import Post from '@/model/Post'
-import Roles from '@/model/Roles'
-import User from '@/model/User'
-import Comments from '@/model/Comments'
-import SignRecord from '@/model/SignRecord'
+import Menu from '@/models/Menus'
+import Post from '@/models/Post'
+import Roles from '@/models/Roles'
+import User from '@/models/User'
+import Comments from '@/models/Comments'
+import SignRecord from '@/models/SignRecord'
 import moment from 'dayjs'
 import { getMenuData, sortMenus, getRights } from '@/common/utils'
 import qs from 'qs'
-// import CommentsUsers from '../model/CommentsUsers'
+// import CommentsUsers from '../models/CommentsUsers'
 
 const weekday = require('dayjs/plugin/weekday')
 moment.extend(weekday)

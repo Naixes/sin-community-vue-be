@@ -12,9 +12,9 @@ import compress from 'koa-compress'
 
 import errHandle from './common/errHandle'
 import WebSocketServer from './config/WebSocket'
-import auth from '@/common/Auth'
-import config from './config/index'
-import log4js from '@/config/Log4j'
+import auth from './common/Auth'
+import config from '@/config/index'
+import log4js from '@/config/log4js'
 import monitorLogger from '@/common/Logger'
 
 const app = new Koa()

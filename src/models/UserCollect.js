@@ -1,4 +1,4 @@
-import moogoose from '../config/DBHelpler'
+import moogoose from '../config/DBHelper'
 
 const Schema = moogoose.Schema
 
