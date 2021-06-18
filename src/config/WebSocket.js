@@ -1,12 +1,11 @@
 import WebSocket from 'ws'
 import { getJWTPayload } from '../common/Utils'
 import Comments from '../model/Comments'
-import configfile from './index'
-//
+import {wsPort} from './index'
 class WebSocketServer {
   constructor (config = {}) {
     const defaultConfig = {
-      port: configfile.wsPort,
+      port: wsPort,
       timeInterval: 5 * 1000,
       isAuth: true
     }

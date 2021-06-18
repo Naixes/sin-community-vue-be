@@ -1,6 +1,6 @@
-import config from '@/config'
-import User from '@/model/User'
-import { setValue } from '@/config/RedisConfig'
+import config from '../config'
+import User from '../model/User'
+import { setValue } from '../config/RedisConfig'
 
 export const run = async () => {
   if (config.adminEmail && config.adminEmail.length > 0) {

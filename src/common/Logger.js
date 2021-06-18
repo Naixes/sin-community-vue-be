@@ -1,4 +1,4 @@
-import log4js from '@/config/Log4j'
+import log4js from '../config/Log4j'
 
 const logger = log4js.getLogger('application')
 

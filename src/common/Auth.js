@@ -1,7 +1,7 @@
-import config from '@/config/index'
-import { getJWTPayload } from '@/common/Utils'
-import { getValue } from '@/config/RedisConfig'
-import adminController from '@/api/AdminController'
+import config from '../config/index'
+import { getJWTPayload } from '../common/Utils'
+import { getValue } from '../config/RedisConfig'
+import adminController from '../api/AdminController'
 export default async (ctx, next) => {
   const headers = ctx.header.authorization
   if (headers) {
