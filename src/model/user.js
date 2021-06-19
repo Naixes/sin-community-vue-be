@@ -116,6 +116,7 @@ UserSchema.statics = {
   }
 }
 
-const UserModel = mongoose.model('users', UserSchema)
+// ????不知道为什么执行了两次
+const UserModel = mongoose.models.users || mongoose.model('users', UserSchema)
 
 export default UserModel

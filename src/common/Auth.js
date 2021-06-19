@@ -1,4 +1,4 @@
-import config from '../config/index'
+import {publicPath} from '../config/index'
 import { getJWTPayload } from '../common/Utils'
 import { getValue } from '../config/RedisConfig'
 import adminController from '../api/AdminController'
@@ -20,7 +20,6 @@ export default async (ctx, next) => {
     }
   }
   // 1. 过滤掉公众路径
-  const { publicPath } = config
   if (publicPath.some((item) => item.test(ctx.url))) {
     await next()
     return

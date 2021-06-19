@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt'
 import { JWT_SECRET } from '../config'
 import { checkCaptcha } from '../common/Utils'
 import User from '../model/user'
-import SignRecord from '../models/SignRecord'
+import SignRecord from '../model/SignRecord'
 
 class LoginController {
   async forget (ctx) {

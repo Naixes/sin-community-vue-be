@@ -318,6 +318,83 @@ class ContentController {
       data: dataPath
     }
   }
+
+  // 添加标签
+  async addTag (ctx) {
+    const { body } = ctx.request
+    const tag = new PostTags(body)
+    await tag.save()
+    ctx.body = {
+      code: 200,
+      msg: '标签保存成功'
+    }
+  }
+
+  // 添加标签
+  async getTags (ctx) {
+    const params = ctx.query
+    const page = params.page ? parseInt(params.page) : 0
+    const limit = params.limit ? parseInt(params.limit) : 10
+    const result = await PostTags.getList({}, page, limit)
+    const total = await PostTags.countList({})
+    ctx.body = {
+      code: 200,
+      data: result,
+      total,
+      msg: '查询tags成功！'
+    }
+  }
+
+  // 删除标签
+  async removeTag (ctx) {
+    const params = ctx.query
+    const result = await PostTags.deleteOne({ id: params.ptid })
+
+    ctx.body = {
+      code: 200,
+      data: result,
+      msg: '删除成功'
+    }
+  }
+
+  // 删除标签
+  async updateTag (ctx) {
+    const { body } = ctx.request
+    const result = await PostTags.updateOne(
+      { _id: body._id },
+      body
+    )
+
+    ctx.body = {
+      code: 200,
+      data: result,
+      msg: '更新成功'
+    }
+  }
+
+  // 获取用户发贴记录
+  async getPostPublic (ctx) {
+    const params = ctx.query
+    const result = await Post.getListByUid(
+      params.uid,
+      params.page,
+      params.limit ? parseInt(params.limit) : 10
+    )
+    const total = await Post.countByUid(params.uid)
+    if (result.length > 0) {
+      ctx.body = {
+        code: 200,
+        data: result,
+        total,
+        msg: '查询列表成功'
+      }
+    } else {
+      ctx.body = {
+        code: 500,
+        msg: '查询列表失败'
+      }
+    }
+  }
 }
 
 export default new ContentController()
